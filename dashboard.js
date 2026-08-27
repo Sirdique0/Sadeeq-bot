@@ -1,10 +1,16 @@
 const SUPABASE_URL='https://hipzrtvrgjdeldfyudbc.supabase.co';
 const SUPABASE_KEY='sb_publishable_NKHdv4Mza99fjiMBPk8C9A_bxcYmsmD';
 const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
-const sidebar=document.getElementById('sidebar'),backdrop=document.getElementById('backdrop'),menu=document.getElementById('menu'),logout=document.getElementById('logout'),title=document.getElementById('page-title');
-const closeMenu=()=>{sidebar.classList.remove('open');backdrop.classList.remove('show')};
-menu?.addEventListener('click',()=>{sidebar.classList.add('open');backdrop.classList.add('show')});
-backdrop?.addEventListener('click',closeMenu);
+const $=id=>document.getElementById(id);const sidebar=$('sidebar'),backdrop=$('backdrop'),menu=$('menu'),logout=$('logout');
+const closeMenu=()=>{sidebar?.classList.remove('open');backdrop?.classList.remove('show')};
+menu?.addEventListener('click',()=>{sidebar.classList.add('open');backdrop.classList.add('show')});backdrop?.addEventListener('click',closeMenu);
 logout?.addEventListener('click',async()=>{logout.disabled=true;await client.auth.signOut();location.href='./auth.html#login'});
-document.querySelectorAll('.nav-item').forEach(item=>item.addEventListener('click',()=>{document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));item.classList.add('active');title.textContent=item.dataset.page||'Home';closeMenu()}));
-(async()=>{const{data}=await client.auth.getSession();if(!data.session){location.replace('./auth.html#login');return}const{data:available,error}=await client.rpc('sadeeq_owner_signup_available');if(!error&&available===true){/* Owner signup should close after the first owner exists; keep dashboard access independent of this flag. */}})();
+document.querySelectorAll('.nav-item').forEach(item=>item.addEventListener('click',()=>{document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));item.classList.add('active');closeMenu()}));
+const power=$('power'),mode=$('mode'),powerLabel=$('power-label'),modeLabel=$('mode-label'),modeBadge=$('mode-badge'),state=$('workspace-state'),message=$('home-message'),form=$('home-form'),send=$('send');
+function renderControls(){const p=power.checked,m=mode.checked;powerLabel.textContent=p?'System operational':'All bots temporarily disabled';modeLabel.textContent=m?'Prompt Mode':'Chat Mode';modeBadge.textContent=m?'PROMPT MODE':'CHAT MODE';state.textContent=m?'Controlled instruction execution is active.':'Normal conversational interaction is active.';message.placeholder=m?'Enter a controlled system instruction…':'Message Sadeeq AI…'}
+async function loadControls(){const{data,error}=await client.from('sadeeq_system_controls').select('power_on,prompt_mode').eq('id',true).maybeSingle();if(error||!data)return false;power.checked=data.power_on;mode.checked=data.prompt_mode;renderControls();return true}
+let saving=false;
+async function saveControls(){if(saving)return;saving=true;power.disabled=true;mode.disabled=true;const{data,error}=await client.rpc('sadeeq_set_system_controls',{p_power_on:power.checked,p_prompt_mode:mode.checked});if(error||!data){await loadControls();alert('Unable to save system controls. No change was applied.')}else renderControls();power.disabled=false;mode.disabled=false;saving=false}
+power?.addEventListener('change',saveControls);mode?.addEventListener('change',saveControls);
+form?.addEventListener('submit',e=>{e.preventDefault();const text=message.value.trim();if(!text||send.disabled)return;if(!power.checked){return}const row=document.createElement('div');row.style.cssText='width:100%;max-width:760px;padding:14px 18px;margin:10px auto;border:1px solid rgba(255,255,255,.08);border-radius:14px;color:#9da8c2;font-size:12px';row.textContent=mode.checked?'Prompt received. Execution will be connected to the controlled command layer in its dedicated level.':'Chat input received. AI runtime will be connected in its dedicated level.';document.getElementById('chat-board').appendChild(row);message.value='';});
+(async()=>{const{data}=await client.auth.getSession();if(!data.session){location.replace('./auth.html#login');return}const{data:owner}=await client.from('sadeeq_owner_accounts').select('user_id').eq('user_id',data.session.user.id).maybeSingle();if(!owner){await client.auth.signOut();location.replace('./auth.html#login');return}await loadControls();renderControls()})();
