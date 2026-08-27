@@ -9,7 +9,7 @@ function showLogin(){loginForm.classList.remove('hidden');signupForm.classList.a
 function showSignup(){loginForm.classList.add('hidden');signupForm.classList.remove('hidden');loginSwitch.classList.remove('hidden');signupSwitch.classList.add('hidden');$('title').textContent='Initial Owner Signup';$('subtitle').textContent='This account can be created only once.'}
 function setSignupAvailability(available){signupSwitch.classList.toggle('hidden',!available);if(!available&&location.hash==='#signup')showLogin()}
 async function ownerSignupAvailable(){const {data,error}=await client.rpc('sadeeq_owner_signup_available');if(error)return false;return data===true}
-async function goOwnerGate(){const {data}=await client.auth.getSession();if(!data.session){showLogin();return}window.location.href='./owner-gate.html'}
+async function goOwnerGate(){const {data}=await client.auth.getSession();if(!data.session){showLogin();return}window.location.href='./dashboard.html'}
 loginSwitch.onclick=showLogin;
 signupSwitch.onclick=showSignup;
 loginForm.addEventListener('submit',async e=>{e.preventDefault();const btn=loginForm.querySelector('button');btn.disabled=true;status('Signing in...');const email=$('email').value.trim();const {data,error}=await client.auth.signInWithPassword({email,password:$('password').value});if(error||!data.session){status('Login failed. Check your email and password.','error');btn.disabled=false;return}await goOwnerGate()});
