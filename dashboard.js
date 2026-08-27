@@ -1,0 +1,10 @@
+const SUPABASE_URL='https://hipzrtvrgjdeldfyudbc.supabase.co';
+const SUPABASE_KEY='sb_publishable_NKHdv4Mza99fjiMBPk8C9A_bxcYmsmD';
+const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+const sidebar=document.getElementById('sidebar'),backdrop=document.getElementById('backdrop'),menu=document.getElementById('menu'),logout=document.getElementById('logout'),title=document.getElementById('page-title');
+const closeMenu=()=>{sidebar.classList.remove('open');backdrop.classList.remove('show')};
+menu?.addEventListener('click',()=>{sidebar.classList.add('open');backdrop.classList.add('show')});
+backdrop?.addEventListener('click',closeMenu);
+logout?.addEventListener('click',async()=>{logout.disabled=true;await client.auth.signOut();location.href='./auth.html#login'});
+document.querySelectorAll('.nav-item').forEach(item=>item.addEventListener('click',()=>{document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));item.classList.add('active');title.textContent=item.dataset.page||'Home';closeMenu()}));
+(async()=>{const{data}=await client.auth.getSession();if(!data.session){location.replace('./auth.html#login');return}const{data:available,error}=await client.rpc('sadeeq_owner_signup_available');if(!error&&available===true){/* Owner signup should close after the first owner exists; keep dashboard access independent of this flag. */}})();
