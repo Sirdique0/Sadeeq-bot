@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Usage Bot</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:#f6f8fb;color:#172033}.page{max-width:1180px;margin:auto;padding:28px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.head h1{margin:0;font-size:25px}.muted{color:#718096;font-size:13px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{background:#fff;border:1px solid #e7ebf1;border-radius:14px;padding:18px;box-shadow:0 4px 16px #1720330a}.label{font-size:12px;color:#718096}.value{font-size:25px;font-weight:700;margin-top:7px}.wide{grid-column:1/-1}.bar{height:9px;background:#edf1f5;border-radius:99px;overflow:hidden;margin-top:12px}.fill{height:100%;width:0%;background:#5b67f1;border-radius:99px;transition:width .35s}.row{display:flex;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #edf0f4;font-size:14px}.row:last-child{border:0}.status{font-size:12px;font-weight:600}.ok{color:#17834b}.bad{color:#c53a3a}.loading{text-align:center;padding:70px;color:#718096}@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){.page{padding:16px}.grid{grid-template-columns:1fr}}
+</style></head>
+<body><main class="page" id="app"><div class="loading">Loading usage…</div></main>
+<script>
+const SUPABASE_URL='https://hipzrtvrgjdeldfyudbc.supabase.co';
+const SUPABASE_ANON_KEY='REPLACE_WITH_EXISTING_PUBLIC_ANON_KEY';
+const app=document.getElementById('app');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(path){const r=await fetch(SUPABASE_URL+path,{headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY},cache:'no-store'});if(!r.ok)throw new Error('Request failed');return r.json()}
+async function load(){try{
+ // Usage is intentionally read through the existing protected data layer when wired in.
+ // Keep this page self-contained and avoid changing any existing bot/chat code.
+ const bots=await api('/rest/v1/sadeeq_bots?select=id,public_bot_id,name,status,chat_limit,bot_daily_limit,updated_at&deleted_at=is.null&order=updated_at.desc');
+ if(!Array.isArray(bots))throw new Error('Invalid data');
+ const total=bots.reduce((n,b)=>n+Number(b.bot_daily_limit||b.chat_limit||0),0);
+ app.innerHTML=`<div class="head"><div><h1>Usage Bot</h1><div class="muted">Bot usage overview</div></div><div class="muted">Updated just now</div></div><section class="grid"><div class="card"><div class="label">Total bots</div><div class="value">${bots.length}</div></div><div class="card"><div class="label">Configured chat capacity</div><div class="value">${total}</div></div><div class="card"><div class="label">Active bots</div><div class="value">${bots.filter(b=>String(b.status||'').toUpperCase()==='ACTIVE').length}</div></div><div class="card"><div class="label">Disabled / suspended</div><div class="value">${bots.filter(b=>['DISABLED','SUSPENDED'].includes(String(b.status||'').toUpperCase())).length}</div></div><div class="card wide"><div class="label">Bot usage limits</div>${bots.length?bots.map(b=>{const lim=Number(b.bot_daily_limit||b.chat_limit||0);return `<div class="row"><span><b>${esc(b.name||'Unnamed bot')}</b><br><span class="muted">${esc(b.public_bot_id||'')}</span></span><span><b>${lim}</b> chats</span></div>`}).join(''):'<div class="muted" style="padding:18px 0">No bots found.</div>'}</div></section>`;
+}catch(e){app.innerHTML='<div class="loading"><b>Unable to load usage.</b><br><span class="muted">Please refresh and try again.</span></div>'}}
+load();
+</script></body></html>
