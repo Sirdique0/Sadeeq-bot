@@ -22,6 +22,19 @@
         <label>Email<input id="email" type="email" autocomplete="username" required></label>
         <label>Password<input id="password" type="password" autocomplete="current-password" required></label>
         <button class="primary" type="submit">Login</button>
+        <button class="secondary" id="forgot-password-btn" type="button">Forgot Password?</button>
+      </form>
+
+      <form id="reset-request-form" class="form hidden">
+        <label>Owner email<input id="reset-email" type="email" autocomplete="email" required></label>
+        <button class="primary" type="submit">Send Password Reset</button>
+        <button class="secondary" id="back-to-login-btn" type="button">Back to Login</button>
+      </form>
+
+      <form id="new-password-form" class="form hidden">
+        <label>New password<input id="new-password" type="password" minlength="8" autocomplete="new-password" required></label>
+        <label>Confirm new password<input id="new-password-confirm" type="password" minlength="8" autocomplete="new-password" required></label>
+        <button class="primary" type="submit">Save New Password</button>
       </form>
 
       <form id="signup-form" class="form hidden">
@@ -55,6 +68,6 @@
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./auth.js"></script>
+  <script src="./auth.js?v=20260902-2"></script>
 </body>
 </html>
