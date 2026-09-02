@@ -32,11 +32,11 @@
       </form>
 
       <div id="pin-setup-panel" class="pin-panel hidden">
-        <strong>Set Owner PIN</strong>
-        <p>Create a 6–12 digit PIN. This is an additional owner security gate.</p>
+        <strong id="pin-setup-title">Set Owner PIN</strong>
+        <p>Create a 6–12 digit PIN. It will be required after password login.</p>
         <label>PIN<input id="setup-pin" type="password" inputmode="numeric" pattern="[0-9]{6,12}" maxlength="12" autocomplete="new-password"></label>
         <label>Confirm PIN<input id="setup-pin-confirm" type="password" inputmode="numeric" pattern="[0-9]{6,12}" maxlength="12" autocomplete="new-password"></label>
-        <button class="primary" id="save-pin-btn" type="button">Save PIN</button>
+        <button class="primary" id="save-pin-btn" type="button">Save PIN &amp; Open Console</button>
       </div>
 
       <div id="pin-panel" class="pin-panel hidden">
@@ -44,6 +44,7 @@
         <p>Enter your owner PIN to continue to the console.</p>
         <label>PIN<input id="pin" type="password" inputmode="numeric" pattern="[0-9]{6,12}" maxlength="12" autocomplete="current-password"></label>
         <button class="primary" id="pin-btn" type="button">Open Console</button>
+        <button class="secondary" id="forgot-pin-btn" type="button">Forgot PIN? Verify password</button>
       </div>
 
       <div class="switch-row">
