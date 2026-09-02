@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#050816">
   <title>Sadeeq AI — Owner Access</title>
   <link rel="icon" href="./chagi-logo.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./auth.css">
+  <link rel="stylesheet" href="./auth.css?v=20260902-3">
 </head>
 <body>
   <main class="auth-shell">
@@ -27,8 +27,14 @@
 
       <form id="reset-request-form" class="form hidden">
         <label>Owner email<input id="reset-email" type="email" autocomplete="email" required></label>
-        <button class="primary" type="submit">Send Password Reset</button>
+        <button class="primary" type="submit">Send Verification Code</button>
         <button class="secondary" id="back-to-login-btn" type="button">Back to Login</button>
+      </form>
+
+      <form id="reset-verify-form" class="form hidden">
+        <label>Verification code<input id="reset-code" type="text" inputmode="numeric" autocomplete="one-time-code" minlength="6" maxlength="8" pattern="[0-9]{6,8}" required></label>
+        <button class="primary" type="submit">Verify</button>
+        <button class="secondary" id="resend-code-btn" type="button">Resend Code</button>
       </form>
 
       <form id="new-password-form" class="form hidden">
@@ -68,6 +74,6 @@
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./auth.js?v=20260902-2"></script>
+  <script src="./auth.js?v=20260902-3"></script>
 </body>
 </html>
